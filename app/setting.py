@@ -7,5 +7,5 @@ __author__ = 'Oort'
 PER_PAGE = 15
 
 RECENT_BOOK_COUNT = 30
-
+# 上传一本书赠0.5鱼豆
 BEANS_UPLOAD_ONE_BOOK = 0.5
