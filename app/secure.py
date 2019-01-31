@@ -9,7 +9,7 @@ DEBUG = True
 SECRET_KEY = '\x03HNK\xa5?X\xe8\xe2y\r\xd2\xb9v\xd6F\xce\xa3\xae\xa5\x8b\x12\xbd\xdeP\xfe\xa9\xa0\xea \xf4\xafY6\x94X\xc42\xcc\x97\xd4\x9e\xcc\x1a\xba\xca\xb0\x07'
 # 数据库用户名
 MYSQL_NAME = 'root'
-# 数据库密码
+# 数据库密码 私人电脑 111111 公司 11111111
 MYSQL_PASSWORD = '111111'
 # 数据库连接地址
 MYSQL_ADDRESS = '127.0.0.1'
