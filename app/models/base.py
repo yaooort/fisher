@@ -3,9 +3,10 @@
     创建人   yao
 """
 from contextlib import contextmanager
+from datetime import datetime
 
-from flask_sqlalchemy import SQLAlchemy as _SQLAlchemy
-from sqlalchemy import SmallInteger, Column
+from flask_sqlalchemy import SQLAlchemy as _SQLAlchemy, BaseQuery
+from sqlalchemy import SmallInteger, Column, Integer
 
 __author__ = 'Oort'
 
@@ -25,14 +26,36 @@ class SQLAlchemy(_SQLAlchemy):
             raise e
 
 
-db = SQLAlchemy()
+class Query(BaseQuery):
+    def filter_by(self, **kwargs):
+        if 'status' not in kwargs.keys():
+            kwargs['status'] = 1
+        return super(Query, self).filter_by(**kwargs)
+
+
+db = SQLAlchemy(query_class=Query)
 
 
 class Base(db.Model):
     __abstract__ = True  # 让ORM创建数据表时忽略此表
+    create_time = Column('create_time', Integer)
     status = Column(SmallInteger, default=1)
+
+    def __init__(self):
+        self.create_time = int(datetime.now().timestamp())
 
     def set_attrs(self, attrs_dict):
         for key, value in attrs_dict.items():
             if hasattr(self, key) and key != 'id':
                 setattr(self, key, value)
+
+    @property
+    def create_datetime(self):
+        """
+        将时间戳转换为时间格式
+        :return:
+        """
+        if self.create_time:
+            return datetime.utcfromtimestamp(self.create_time)
+        else:
+            return None

@@ -2,10 +2,9 @@
     创建日期 2019-01-31 16:35
     创建人   yao
 """
-from _curses import flash
 
-from flask import request, redirect, url_for, render_template
-from flask_login import login_user
+from flask import request, redirect, url_for, render_template, flash
+from flask_login import login_user, login_required, logout_user
 
 from app.forms.auth import RegisterForm, LoginForm
 from app.models.base import db
@@ -46,3 +45,10 @@ def login():
 @web.route('/reset/password', methods=['GET', 'POST'])
 def forget_password_request():
     pass
+
+
+@web.route('/logout', methods=['GET', 'POST'])
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('web.login'))
