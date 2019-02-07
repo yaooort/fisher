@@ -16,7 +16,7 @@ def not_found(e):
 
 
 @web.app_errorhandler(500)
-def not_found(e):
+def server_error(e):
     # AOP 思想
     return render_template('500.html'), 500
 

@@ -7,10 +7,14 @@ from sqlalchemy import Integer, Column, ForeignKey, String, Boolean, desc, func
 from sqlalchemy.orm import relationship
 
 from app.models.base import Base, db
-from app.models.wish import Wish
+
 from app.spider.yushu_book import YuShuBook
+from collections import namedtuple
 
 __author__ = 'Oort'
+
+# 快速定义类
+EachGiftWishCount = namedtuple("EachGiftWishCount", ['count', 'isbn'])
 
 
 class Gift(Base):
@@ -27,11 +31,12 @@ class Gift(Base):
 
     @classmethod
     def get_wish_counts(cls, isbn_list):
-        count_list = db.session.query(func(Wish.id), Wish.isbn).filter(
+        count_list = db.session.query(func.count(Wish.id), Wish.isbn).filter(
             Wish.launched == False,
             Wish.isbn.in_(isbn_list),
-            Wish.status == 1
-        ).group_by(Wish.isbn).all()
+            Wish.status == 1).group_by(
+            Wish.isbn).all()
+        count_list = [EachGiftWishCount(w[0], w[1]) for w in count_list]
         return count_list
 
     @property
@@ -48,3 +53,14 @@ class Gift(Base):
             desc(Gift.create_time)).limit(
             current_app.config['RECENT_BOOK_COUNT']).distinct().all()
         return recent_gift
+
+    def is_you_self_gift(self, uid):
+        """
+        该礼物是否属于uid
+        :param uid:
+        :return:
+        """
+        return True if self.uid == uid else False
+
+
+from app.models.wish import Wish

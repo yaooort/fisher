@@ -25,3 +25,12 @@ MYSQL_CHARSET = 'utf8'
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 # 数据库链接
 SQLALCHEMY_DATABASE_URI = 'mysql+cymysql://' + MYSQL_NAME + ':' + MYSQL_PASSWORD + '@' + MYSQL_ADDRESS + ':' + MYSQL_PORT + '/' + MYSQL_DB_NAME + '?charset=' + MYSQL_CHARSET
+
+# Email配置
+MAIL_SERVER = 'smtp.gmail.com'
+MAIL_PORT = 465
+MAIL_USE_SSL = True
+MAIL_DEFAULT_SENDER = ('小鱼', 'yaooort@gmail.com')
+MAIL_MAX_EMAILS = 10
+MAIL_USERNAME = 'yaooort@gmail.com'
+MAIL_PASSWORD = 'YaoOort123'
