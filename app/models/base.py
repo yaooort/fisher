@@ -59,3 +59,6 @@ class Base(db.Model):
             return datetime.utcfromtimestamp(self.create_time)
         else:
             return None
+
+    def delete(self):
+        self.status = 0

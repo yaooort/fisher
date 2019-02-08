@@ -11,9 +11,12 @@ from werkzeug.utils import redirect
 
 from app.forms.book import DriftForm
 from app.libs.email import send_email
+from app.libs.enums import PendingStatus
 from app.models.base import db
 from app.models.drift import Drift
 from app.models.gift import Gift
+from app.models.user import User
+from app.models.wish import Wish
 from app.view_models.book import BookViewModel
 from app.view_models.drift import DriftCollection
 from . import web
@@ -60,18 +63,52 @@ def pending():
 
 
 @web.route('/drift/<int:did>/reject')
+@login_required
 def reject_drift(did):
-    pass
+    """
+    已拒绝
+    :param did:
+    :return:
+    """
+    with db.auto_commit():
+        drift = Drift.query.filter_by(gift_id=current_user.id, id=did).first_or_404()
+        drift.pending = PendingStatus.Reject
+        user = User.query.get_or_404(drift.requester_id)
+        user.beans += 1
+    return redirect(url_for('web.pending'))
 
 
 @web.route('/drift/<int:did>/redraw')
+@login_required
 def redraw_drift(did):
-    pass
+    """
+    撤销书籍
+    :param did:
+    :return:
+    """
+    with db.auto_commit():
+        drift = Drift.query.filter_by(requester_id=current_user.id, id=did).first_or_404()
+        drift.pending = PendingStatus.Redraw
+    current_user.beans += 1
+    return redirect(url_for('web.pending'))
 
 
 @web.route('/drift/<int:did>/mailed')
+@login_required
 def mailed_drift(did):
-    pass
+    """
+    已邮寄
+    :param did:
+    :return:
+    """
+    with db.auto_commit():
+        drift = Drift.query.filter_by(gifter_id=current_user.id, id=did).first_or_404()
+        drift.pending = PendingStatus.Success
+        current_user.beans += 1
+        gift = Gift.query.filter_by(id=drift.gift_id).first_or_404()
+        gift.launched = True
+        Wish.query.filter_by(isbn=drift.isbn, uid=drift.requester_id, launched=False).update({Wish.launched: True})
+    return redirect(url_for('web.pending'))
 
 
 def save_drift(drift_form, current_gift):
